@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# typedFormAction PoC
 
-## Getting Started
+typedFormAction is a proof of concept that adresses the pain point of lacking typesafety for FormData in React Server Actions.
 
-First, run the development server:
+## Reasoning
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The default FormData type in Server Actions doesn't offer type-safe `get()` operations, which make it more error-prone. Normally you would have to reach for Client Components to achieve type-safe Server Actions by storing inputs' values in state and utilizing [closures](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#closures-and-encryption).
+
+The proposed helpers enforce typesafety for input `name` attribute values and the corresponding `formData` fields.
+
+## [Example](https://github.com/bohdancho/typed-form-action/blob/751bebb2182669ca69228aea2a60863848fc006c/src/app/page.tsx#L3-L33)
+
+Detailed explanation:
+
+First, create a helper-object. Whether it's declared inside of a component or not doesn't matter since it doesn't hold any state.
+```tsx
+const form = typedActionForm("name", "age");
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Now you can populate the name attribute:
+```tsx
+<input {...form.age} className="text-black" />
+```
+Which is equivalent to this:
+```tsx
+<input name={form.age.name} className="text-black" />
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Finally, use `form.$infer` to assert a strict custom version of FormData.
+```ts
+const formData = f as typeof form.$infer;
+const name = formData.get("name");
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Now accessing a nonexistent field will error:
+```ts
+const invalid = formData.get("name1"); // Argument of type '"name1"' is not assignable to parameter of type '"name" | "age"'. [2345]
+```
 
-## Learn More
+## Run the example
+```bash
+npm install && npm run dev
+# or
+yarn install && yarn dev
+# or
+pnpm install && pnpm dev
+# or
+bun install && bun dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Under the hood
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- My solution utilizes [a solution for a generic strongly typed FormData from a community member](https://github.com/microsoft/TypeScript/issues/43797#issuecomment-1311633838).
+- Spreading in tsx attributes was inspired by [react-hook-form](https://github.com/react-hook-form/react-hook-form)'s `register` method.
+- The `$infer` helper was inspired by a similar helper from (Drizzle)[https://github.com/drizzle-team/drizzle-orm].

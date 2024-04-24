@@ -78,3 +78,10 @@ export interface TypedFormData<T extends Record<string, TypedFormDataValue>> {
     thisArg?: unknown,
   ): void;
 }
+
+// NOTE: this isn't helpful in Next.js
+function getTypedFormData<T extends Record<string, TypedFormDataValue>>(
+  form?: HTMLFormElement | null,
+): TypedFormData<T> {
+  return new FormData(form || undefined) as unknown as TypedFormData<T>;
+}
