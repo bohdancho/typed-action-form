@@ -29,12 +29,12 @@ Which is equivalent to this:
 Finally, use `form.$infer` to assert a strict custom version of FormData.
 ```ts
 const formData = f as typeof form.$infer;
-const name = formData.get("name");
+const age = formData.get("age");
 ```
 
 Now accessing a nonexistent field will error:
 ```ts
-const invalid = formData.get("name1"); // Argument of type '"name1"' is not assignable to parameter of type '"name" | "age"'. [2345]
+const invalid = formData.get("age1"); // Argument of type '"age1"' is not assignable to parameter of type '"name" | "age"'. [2345]
 ```
 
 ## Run the example

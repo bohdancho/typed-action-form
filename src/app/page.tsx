@@ -15,7 +15,7 @@ export default function Home() {
           console.log("Name:", name);
           console.log("Age:", age);
 
-          const invalid = formData.get("name1");
+          const invalid = formData.get("age1");
         }}
       >
         <label>
