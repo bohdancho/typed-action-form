@@ -1,6 +1,6 @@
-# typedFormAction PoC
+# typedActionForm PoC
 
-typedFormAction is a proof of concept that adresses the pain point of lacking typesafety for FormData in React Server Actions.
+typedActionForm is a proof of concept that adresses the pain point of lacking typesafety for FormData in React Server Actions.
 
 ## Reasoning
 
@@ -14,7 +14,7 @@ Detailed explanation:
 
 First, create a helper-object. Whether it's declared inside of a component or not doesn't matter since it doesn't hold any state.
 ```tsx
-const form = typedFormAction("name", "age");
+const form = typedActionForm("name", "age");
 ```
 
 Now you can populate the name attribute:
@@ -26,9 +26,9 @@ Which is equivalent to this:
 <input name={form.age.name} />
 ```
 
-Finally, use `form.$infer` to assert a strict custom version of FormData.
+Finally, use `form.infer()` to assert a strict custom version of FormData.
 ```ts
-const formData = f as typeof form.$infer;
+const formData = form.infer(f); // f is untyped FormData
 const age = formData.get("age");
 ```
 
@@ -52,4 +52,3 @@ bun install && bun dev
 
 - My solution utilizes [a solution for a generic strongly typed FormData from a community member](https://github.com/microsoft/TypeScript/issues/43797#issuecomment-1311633838).
 - Spreading in tsx attributes was inspired by [react-hook-form](https://github.com/react-hook-form/react-hook-form)'s `register` method.
-- The `$infer` helper was inspired by a similar helper from (Drizzle)[https://github.com/drizzle-team/drizzle-orm].

@@ -1,6 +1,6 @@
 import type { TypedFormData, TypedFormDataValue } from "./typed-form-data";
 
-const form = typedFormAction("name", "age");
+const form = typedActionForm("name", "age");
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -9,7 +9,11 @@ export default function Home() {
         action={async (f: FormData) => {
           "use server";
 
-          const formData = f as typeof form.$infer;
+          const formData = form.infer(f);
+
+          // alernative:
+          // const formData = f as typeof form.$infer;
+
           const name = formData.get("name");
           const age = formData.get("age");
           console.log("Name:", name);
@@ -32,13 +36,20 @@ export default function Home() {
   );
 }
 
-function typedFormAction<T extends string>(...args: T[]) {
-  return Object.fromEntries(args.map((name) => [name, { name }])) as {
-    [K in T]: { name: K };
-  } & { readonly $infer: InferFormData<{ [K in T]: K }> };
+function typedActionForm<TFields extends string>(...args: TFields[]) {
+  const form = Object.fromEntries(args.map((name) => [name, { name }])) as {
+    [K in TFields]: { name: K };
+  } & {
+    infer: (formData: FormData) => InferFormData<TFields>;
+    // alternative:
+    // readonly $infer: InferFormData<TFields>;
+  };
+
+  form.infer = (formData) => formData as unknown as InferFormData<TFields>;
+
+  return form;
 }
 
-type InferFormData<T> =
-  T extends Record<infer U, unknown>
-    ? TypedFormData<Record<U, TypedFormDataValue>>
-    : never;
+type InferFormData<T extends string> = TypedFormData<
+  Record<T, TypedFormDataValue>
+>;
