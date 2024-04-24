@@ -14,7 +14,7 @@ Detailed explanation:
 
 First, create a helper-object. Whether it's declared inside of a component or not doesn't matter since it doesn't hold any state.
 ```tsx
-const form = typedActionForm("name", "age");
+const form = typedFormAction("name", "age");
 ```
 
 Now you can populate the name attribute:

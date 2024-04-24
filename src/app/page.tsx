@@ -1,6 +1,6 @@
 import type { TypedFormData, TypedFormDataValue } from "./typed-form-data";
 
-const form = typedActionForm("name", "age");
+const form = typedFormAction("name", "age");
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -32,7 +32,7 @@ export default function Home() {
   );
 }
 
-function typedActionForm<T extends string>(...args: T[]) {
+function typedFormAction<T extends string>(...args: T[]) {
   return Object.fromEntries(args.map((name) => [name, { name }])) as {
     [K in T]: { name: K };
   } & { readonly $infer: InferFormData<{ [K in T]: K }> };
