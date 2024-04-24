@@ -19,11 +19,11 @@ const form = typedActionForm("name", "age");
 
 Now you can populate the name attribute:
 ```tsx
-<input {...form.age} className="text-black" />
+<input {...form.age} />
 ```
 Which is equivalent to this:
 ```tsx
-<input name={form.age.name} className="text-black" />
+<input name={form.age.name} />
 ```
 
 Finally, use `form.$infer` to assert a strict custom version of FormData.
