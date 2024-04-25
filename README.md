@@ -13,31 +13,38 @@ The proposed helpers enforce typesafety for input `name` attribute values and th
 Detailed explanation:
 
 First, create a helper-object. Whether it's declared inside of a component or not doesn't matter since it doesn't hold any state.
+
 ```tsx
-const form = typedActionForm("name", "age");
+const form = typedActionForm('name', 'age')
 ```
 
 Now you can populate the name attribute:
+
 ```tsx
 <input {...form.age} />
 ```
+
 Which is equivalent to this:
+
 ```tsx
 <input name={form.age.name} />
 ```
 
 Finally, use `form.infer()` to assert a strict custom version of FormData.
+
 ```ts
-const formData = form.infer(f); // f is untyped FormData
-const age = formData.get("age");
+const formData = form.infer(f) // f is untyped FormData
+const age = formData.get('age')
 ```
 
 Now accessing a nonexistent field will error:
+
 ```ts
-const invalid = formData.get("age1"); // Argument of type '"age1"' is not assignable to parameter of type '"name" | "age"'. [2345]
+const invalid = formData.get('age1') // Argument of type '"age1"' is not assignable to parameter of type '"name" | "age"'. [2345]
 ```
 
 ## Run the example
+
 ```bash
 npm install && npm run dev
 # or

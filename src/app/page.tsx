@@ -1,34 +1,34 @@
-import type { TypedFormData, TypedFormDataValue } from "./typed-form-data";
+import type { TypedFormData, TypedFormDataValue } from './typed-form-data'
 
-const form = typedActionForm("name", "age");
+const form = typedActionForm('name', 'age')
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className='flex min-h-screen flex-col items-center justify-between p-24'>
       <form
-        className="flex flex-col gap-2"
+        className='flex flex-col gap-2'
         action={form.$action(async (formData) => {
-          "use server";
+          'use server'
 
-          const name = formData.get("name");
-          const age = formData.get("age");
-          console.log("Name:", name);
-          console.log("Age:", age);
+          const name = formData.get('name')
+          const age = formData.get('age')
+          console.log('Name:', name)
+          console.log('Age:', age)
 
-          const invalid = formData.get("age1");
+          const invalid = formData.get('age1')
         })}
       >
         <label>
           <p>Name:</p>
-          <input {...form.name} className="text-black" />
+          <input {...form.name} className='text-black' />
         </label>
         <label>
           <p>Age:</p>
-          <input {...form.age} className="text-black" />
+          <input {...form.age} className='text-black' />
         </label>
-        <button type="submit">Submit</button>
+        <button type='submit'>Submit</button>
       </form>
     </main>
-  );
+  )
 }
 
 function typedActionForm<
@@ -36,29 +36,25 @@ function typedActionForm<
   TInputsProps extends InputProps<TFields>,
   TFormData extends InferFormData<TFields>,
 >(...args: TFields[]) {
-  const inputsProps = Object.fromEntries(
-    args.map((name) => [name, { name }]),
-  ) as TInputsProps;
+  const inputsProps = Object.fromEntries(args.map((name) => [name, { name }])) as TInputsProps
 
   function $inferFormData(formData: FormData) {
-    return formData as unknown as TFormData;
+    return formData as unknown as TFormData
   }
 
   function $action(action: (formData: TFormData) => void) {
     return async (formData: FormData) => {
-      "use server";
+      'use server'
 
-      return action(formData as unknown as TFormData);
-    };
+      return action(formData as unknown as TFormData)
+    }
   }
 
-  return { ...inputsProps, $inferFormData, $action };
+  return { ...inputsProps, $inferFormData, $action }
 }
 
 type InputProps<TFields extends string> = {
-  [K in TFields]: { name: K };
-};
+  [K in TFields]: { name: K }
+}
 
-type InferFormData<T extends string> = TypedFormData<
-  Record<T, TypedFormDataValue>
->;
+type InferFormData<T extends string> = TypedFormData<Record<T, TypedFormDataValue>>
