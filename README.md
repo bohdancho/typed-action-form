@@ -32,18 +32,29 @@ Which is equivalent to this:
 
 Finally, use the `form.$action` wrapper to access a typed formData object:
 
-```ts
+```tsx
 <form action={form.$action(async (formData) => {
   'use server'
 
   const name = formData.get('name')
   const age = formData.get('age')
+})}>
 ```
 
 Now accessing a nonexistent field will error:
 
 ```tsx
 formData.get('age1') // Argument of type '"age1"' is not assignable to parameter of type '"name" | "age"'. [2345]
+```
+
+Alternatively, you could omit the $action wrapper and use the `form.$inferFormData` helper to assert the augmented TypedFormData type:
+```tsx
+<form action={async (untypedFormData: FormData) => {
+  'use server'
+
+  const formData = form.$inferFormData(untypedFormData) 
+  // formData is typesafe
+})}>
 ```
 
 ## Run the example
