@@ -6,13 +6,8 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <form
         className="flex flex-col gap-2"
-        action={async (f: FormData) => {
+        action={form.$action(async (formData) => {
           "use server";
-
-          const formData = form.infer(f);
-
-          // alernative:
-          // const formData = f as typeof form.$infer;
 
           const name = formData.get("name");
           const age = formData.get("age");
@@ -20,7 +15,7 @@ export default function Home() {
           console.log("Age:", age);
 
           const invalid = formData.get("age1");
-        }}
+        })}
       >
         <label>
           <p>Name:</p>
@@ -36,16 +31,24 @@ export default function Home() {
   );
 }
 
-function typedActionForm<TFields extends string>(...args: TFields[]) {
+function typedActionForm<
+  TFields extends string,
+  TFormData extends InferFormData<TFields>,
+>(...args: TFields[]) {
   const form = Object.fromEntries(args.map((name) => [name, { name }])) as {
     [K in TFields]: { name: K };
   } & {
-    infer: (formData: FormData) => InferFormData<TFields>;
-    // alternative:
-    // readonly $infer: InferFormData<TFields>;
+    readonly $infer: TFormData;
+    $inferFormData: (formData: FormData) => TFormData;
+    $action: (
+      action: (formData: TFormData) => void,
+    ) => (formData: FormData) => void;
   };
-
-  form.infer = (formData) => formData as unknown as InferFormData<TFields>;
+  form.$inferFormData = (formData) => formData as unknown as TFormData;
+  form.$action = (action) => async (formData) => {
+    "use server";
+    return action(formData as unknown as TFormData);
+  };
 
   return form;
 }
